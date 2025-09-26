@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AlertIQ</title>
+  <style>
+    :root {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-card: #334155;
+      --bg-sidebar: #1a2332;
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --success: #10b981;
+      --error: #ef4444;
+      --warning: #f59e0b;
+      --border: #475569;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    .container {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+      width: 250px;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
+      padding: 20px 0;
+      transition: all 0.3s ease;
+      overflow-y: auto;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+    }
+
+    .sidebar-header {
+      padding: 0 20px 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .user-info {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .sidebar-menu {
+      list-style: none;
+    }
+
+    .menu-item {
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-left: 3px solid transparent;
+    }
+
+    .menu-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .menu-item.active {
+      background: rgba(59, 130, 246, 0.1);
+      border-left-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .menu-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 10px 20px;
+    }
+
+    .sidebar-footer {
+      padding: 20px;
+      margin-top: auto;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Main Content Styles */
+    .main-content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--bg-card);
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+    }
+
+    h1, h2, h3, h4 {
+      color: var(--text-primary);
+      margin-bottom: 15px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+      background: linear-gradient(45deg, var(--accent), var(--success));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    input, textarea, select, button {
+      width: 100%;
+      padding: 12px 16px;
+      margin: 8px 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      transition: all 0.3s ease;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    button {
+      background: linear-gradient(45deg, var(--accent), var(--accent-hover));
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      padding: 14px;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    button.secondary {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+    }
+
+    button.danger {
+      background: var(--error);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .message {
+      padding: 12px;
+      border-radius: 8px;
+      margin: 10px 0;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .success { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+    .error { background: rgba(239, 68, 68, 0.2); color: var(--error); }
+    .warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 15px;
+    }
+
+    .nominee-card {
+      background: var(--bg-secondary);
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-bottom: 10px;
+    }
+
+    .emergency-item {
+      background: var(--bg-secondary);
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      border-left: 4px solid var(--accent);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: var(--bg-secondary);
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--accent);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: var(--bg-secondary);
+      font-weight: 600;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 5px;
+    }
+
+    .action-buttons button {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .quick-action-card {
+      background: var(--bg-secondary);
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .quick-action-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      border-color: var(--accent);
+    }
+
+    .quick-action-icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+      }
+      
+      .main-content {
+        padding: 15px;
+      }
+      
+      .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+      }
+      
+      .card {
+        padding: 20px;
+      }
+      
+      .quick-actions {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar hidden" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span>🚨</span>
+          <span>AlertIQ</span>
+        </div>
+        <div class="user-info">
+          <div id="sidebarUsername">Guest User</div>
+          <div id="sidebarEmail">guest@example.com</div>
+        </div>
+      </div>
+      
+      <ul class="sidebar-menu">
+        <li class="menu-item active" onclick="switchSection('dashboard')">
+          <span>📊</span>
+          <span>Dashboard</span>
+        </li>
+        <li class="menu-item" onclick="switchSection('emergency')">
+          <span>🚨</span>
+          <span>Emergency Alert</span>
+        </li>
+        <li class="menu-item" onclick="switchSection('nominees')">
+          <span>👥</span>
+          <span>My Nominees</span>
+        </li>
+        <li class="menu-item" onclick="switchSection('history')">
+          <span>📜</span>
+          <span>Alert History</span>
+        </li>
+        <li class="menu-item" onclick="switchSection('settings')">
+          <span>⚙️</span>
+          <span>Settings</span>
+        </li>
+        
+        <li class="menu-divider"></li>
+        
+      
+      <div class="sidebar-footer">
+        <button class="secondary" onclick="logout()" style="width: 100%;">🚪 Logout</button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Authentication Section -->
+      <div id="authSection">
+        <h1>AlertIQ</h1>
+        
+        <!-- Health Status -->
+        <div class="card">
+          <div class="section-title">
+            <span>🔧 System Status</span>
+          </div>
+          <div id="healthStatus">
+            <div class="message warning">Checking system status...</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-title">
+            <span>🔐 Authentication</span>
+          </div>
+          
+          <!-- Step 1: Request OTP -->
+          <div id="step1">
+            <div class="grid-2">
+              <input type="text" id="name" placeholder="Your Full Name" required>
+              <input type="email" id="email" placeholder="Your Email" required>
+            </div>
+            <div class="grid-2">
+              <input type="tel" id="phone" placeholder="Your Phone (+91...)" required>
+              <button onclick="requestOtp()">📱 Request OTP</button>
+            </div>
+            <div id="msg1" class="message"></div>
+          </div>
+
+          <!-- Step 2: Verify OTP -->
+          <div id="step2" class="hidden">
+            <div class="grid-2">
+              <input type="text" id="otp" placeholder="Enter 6-digit OTP" maxlength="6">
+              <button onclick="verifyOtp()">✅ Verify OTP</button>
+            </div>
+            <button class="secondary" onclick="goBackToStep1()">⬅️ Back</button>
+            <div id="msg2" class="message"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Content (shown after login) -->
+      <div id="dashboardContent" class="hidden">
+        <!-- Welcome and Stats -->
+        <div class="card">
+          <div class="section-title">
+            <span>👋 Welcome, <span id="username"></span></span>
+          </div>
+          
+          <!-- Quick Actions -->
+          <div class="quick-actions">
+            <div class="quick-action-card" onclick="switchSection('emergency')">
+              <div class="quick-action-icon">🚨</div>
+              <div>Send Emergency Alert</div>
+            </div>
+            <div class="quick-action-card" onclick="switchSection('nominees')">
+              <div class="quick-action-icon">👥</div>
+              <div>Manage Nominees</div>
+            </div>
+            <div class="quick-action-card" onclick="switchSection('history')">
+              <div class="quick-action-icon">📜</div>
+              <div>View Alert History</div>
+            </div>
+          </div>
+          
+          <div class="stats">
+            <div class="stat-card">
+              <div class="stat-number" id="nomineeCount">0</div>
+              <div>Nominees</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number" id="emergencyCount">0</div>
+              <div>Emergencies</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number" id="userPhone">-</div>
+              <div>Your Phone</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboardSection" class="section-content">
+          <div class="card">
+            <div class="section-title">
+              <span>📊 Recent Activity</span>
+            </div>
+            <div id="recentActivity">
+              <div class="message warning">No recent activity to display</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Emergency Section -->
+        <div id="emergencySection" class="section-content hidden">
+          <div class="card">
+            <div class="section-title">
+              <span>🚨 Send Emergency Alert</span>
+            </div>
+            <textarea id="sentence" rows="4" placeholder="Describe your emergency situation..."></textarea>
+            <div class="grid-2">
+              <select id="emergencyType">
+                <option value="">Auto-detect from text</option>
+                <option value="medical">Medical Emergency</option>
+                <option value="fire">Fire</option>
+                <option value="accident">Accident</option>
+                <option value="crime">Crime</option>
+                <option value="natural_disaster">Natural Disaster</option>
+                <option value="other">Other</option>
+              </select>
+              <button onclick="sendEmergency()">🚨 Send Emergency Alert</button>
+            </div>
+            <div id="msg4" class="message"></div>
+            
+            <!-- Prediction Results -->
+            <div id="predictionResult" class="hidden">
+              <div class="section-title">
+                <span>🤖 AI Detection</span>
+              </div>
+              <div id="predictionDetails"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nominees Section -->
+        <div id="nomineesSection" class="section-content hidden">
+          <div class="card">
+            <div class="section-title">
+              <span>👥 Manage Nominees</span>
+            </div>
+            <div id="nomineeList"></div>
+            
+            <div class="section-title">
+              <span>➕ Add New Nominee</span>
+            </div>
+            <div class="grid-2">
+              <input type="text" id="newNomineeName" placeholder="Nominee Name">
+              <input type="text" id="newNomineePhone" placeholder="Nominee Phone">
+            </div>
+            <button onclick="addNominee()">➕ Add Nominee</button>
+          </div>
+        </div>
+
+        <!-- History Section -->
+        <div id="historySection" class="section-content hidden">
+          <div class="card">
+            <div class="section-title">
+              <span>📜 Emergency History</span>
+            </div>
+            <div id="emergencyHistory"></div>
+          </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div id="settingsSection" class="section-content hidden">
+          <div class="card">
+            <div class="section-title">
+              <span>⚙️ Account Settings</span>
+            </div>
+            
+            <div class="grid-2">
+              <input type="text" id="newPhone" placeholder="New Phone Number">
+              <button onclick="updateMyPhone()">💾 Update Phone</button>
+            </div>
+            
+            <div class="section-title">
+              <span>🔐 Re-authenticate</span>
+            </div>
+            <button class="secondary" onclick="logout()">🚪 Logout</button>
+          </div>
+        </div>        
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = "http://localhost:5055";
+
+    // Global state
+    let userEmail = "";
+    let userName = "";
+    let userPhone = "";
+    let userId = null;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      checkHealth();
+    });
+
+    async function checkHealth() {
+      try {
+        const res = await fetch(`${API_BASE}/health`);
+        const data = await res.json();
+        
+        const healthDiv = document.getElementById('healthStatus');
+        if (data.status === 'ok') {
+          healthDiv.innerHTML = '<div class="message success">✅ All systems operational</div>';
+        } else {
+          healthDiv.innerHTML = '<div class="message warning">⚠️ System degraded - Some features may not work</div>';
+        }
+      } catch (error) {
+        document.getElementById('healthStatus').innerHTML = '<div class="message error">❌ Cannot connect to server</div>';
+      }
+    }
+
+    async function requestOtp() {
+      userEmail = document.getElementById("email").value;
+      userName = document.getElementById("name").value;
+      userPhone = document.getElementById("phone").value;
+
+      if (!userEmail || !userName || !userPhone) {
+        showMessage('msg1', 'Please fill all fields', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/request-otp`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: userEmail,
+            name: userName,
+            phone: userPhone
+          })
+        });
+        
+        const data = await res.json();
+        
+        if (res.ok) {
+          showMessage('msg1', 'OTP sent to your email!', 'success');
+          document.getElementById("step1").classList.add("hidden");
+          document.getElementById("step2").classList.remove("hidden");
+        } else {
+          showMessage('msg1', data.detail || 'Error sending OTP', 'error');
+        }
+      } catch (error) {
+        showMessage('msg1', 'Network error - check connection', 'error');
+      }
+    }
+
+    async function verifyOtp() {
+      const otp = document.getElementById("otp").value;
+
+      if (!otp || otp.length !== 6) {
+        showMessage('msg2', 'Please enter a valid 6-digit OTP', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/verify-otp`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: userEmail, otp })
+        });
+        
+        const data = await res.json();
+        
+        if (res.ok) {
+          userId = data.user_id;
+          showMessage('msg2', '✅ Verification successful!', 'success');
+          
+          setTimeout(() => {
+            document.getElementById("authSection").classList.add("hidden");
+            document.getElementById("dashboardContent").classList.remove("hidden");
+            document.getElementById("sidebar").classList.remove("hidden");
+            document.getElementById("username").textContent = userName;
+            document.getElementById("userPhone").textContent = userPhone;
+            document.getElementById("sidebarUsername").textContent = userName;
+            document.getElementById("sidebarEmail").textContent = userEmail;
+            
+            loadDashboard();
+          }, 1000);
+        } else {
+          showMessage('msg2', data.detail || 'Invalid OTP', 'error');
+        }
+      } catch (error) {
+        showMessage('msg2', 'Network error', 'error');
+      }
+    }
+
+    function goBackToStep1() {
+      document.getElementById("step2").classList.add("hidden");
+      document.getElementById("step1").classList.remove("hidden");
+      document.getElementById("msg1").innerHTML = '';
+    }
+
+    async function loadDashboard() {
+      await loadNominees();
+      await loadEmergencies();
+      await loadRecentActivity();
+    }
+
+    async function sendEmergency() {
+      const sentence = document.getElementById("sentence").value;
+      const selectedType = document.getElementById("emergencyType").value;
+
+      if (!sentence.trim()) {
+        showMessage('msg4', 'Please describe your emergency', 'error');
+        return;
+      }
+
+      let emergencyType = selectedType;
+
+      // Use AI prediction if no type selected
+      if (!emergencyType) {
+        try {
+          const resPred = await fetch(`${API_BASE}/predict`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ texts: [sentence] })
+          });
+          
+          if (resPred.ok) {
+            const predData = await resPred.json();
+            emergencyType = predData.labels[0];
+            
+            // Show prediction results
+            document.getElementById('predictionResult').classList.remove('hidden');
+            document.getElementById('predictionDetails').innerHTML = `
+              <div class="message success">
+                Detected: <strong>${emergencyType}</strong>
+                ${predData.probabilities ? 
+                  ` (Confidence: ${Math.max(...predData.probabilities[0]).toFixed(2)})` : ''}
+              </div>
+            `;
+          }
+        } catch (error) {
+          console.warn('Prediction failed:', error);
+        }
+      }
+
+      // Get location
+      let latitude = null, longitude = null;
+      if (navigator.geolocation) {
+        try {
+          const pos = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+              enableHighAccuracy: true,
+              timeout: 10000
+            });
+          });
+          latitude = pos.coords.latitude;
+          longitude = pos.coords.longitude;
+        } catch (err) {
+          console.warn("Geolocation failed:", err.message);
+        }
+      }
+
+      try {
+        const resEm = await fetch(`${API_BASE}/emergency`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: userEmail,
+            type: emergencyType,
+            details: sentence,
+            latitude,
+            longitude
+          })
+        });
+        
+        const emData = await resEm.json();
+        
+        if (resEm.ok) {
+          showMessage('msg4', '✅ Emergency alert sent to your nominees!', 'success');
+          document.getElementById("sentence").value = "";
+          loadEmergencies();
+          loadRecentActivity();
+        } else {
+          showMessage('msg4', emData.detail || 'Error sending alert', 'error');
+        }
+      } catch (error) {
+        showMessage('msg4', 'Network error', 'error');
+      }
+    }
+
+    async function loadEmergencies() {
+      try {
+        const res = await fetch(`${API_BASE}/me/emergencies?email=${encodeURIComponent(userEmail)}`);
+        const data = await res.json();
+        
+        document.getElementById('emergencyCount').textContent = data.emergencies?.length || 0;
+        
+        const historyDiv = document.getElementById('emergencyHistory');
+        
+        if (data.emergencies && data.emergencies.length > 0) {
+          let html = '<table><thead><tr><th>Type</th><th>Details</th><th>Time</th></tr></thead><tbody>';
+          
+          data.emergencies.forEach(em => {
+            const time = formatDateTime(em.created_at);
+            html += `
+              <tr>
+                <td><span class="emergency-badge">${em.type || 'N/A'}</span></td>
+                <td>${em.details || 'N/A'}</td>
+                <td>${time}</td>
+              </tr>
+            `;
+          });
+          
+          html += '</tbody></table>';
+          historyDiv.innerHTML = html;
+        } else {
+          historyDiv.innerHTML = '<div class="message warning">No emergencies reported yet</div>';
+        }
+      } catch (error) {
+        console.error('Error loading emergencies:', error);
+      }
+    }
+
+    async function loadNominees() {
+      try {
+        const res = await fetch(`${API_BASE}/me/nominees?email=${encodeURIComponent(userEmail)}`);
+        const data = await res.json();
+        
+        document.getElementById('nomineeCount').textContent = data.nominees?.length || 0;
+        
+        const div = document.getElementById("nomineeList");
+        
+        if (data.nominees && data.nominees.length > 0) {
+          let html = '';
+          data.nominees.forEach(nm => {
+            html += `
+              <div class="nominee-card">
+                <div class="grid-2">
+                  <input type="text" id="n${nm.id}name" value="${nm.name}" placeholder="Name">
+                  <input type="text" id="n${nm.id}phone" value="${nm.phone}" placeholder="Phone">
+                </div>
+                <div class="action-buttons">
+                  <button onclick="saveNominee(${nm.id})">💾 Save</button>
+                  <button class="danger" onclick="deleteNominee(${nm.id})">🗑️ Delete</button>
+                </div>
+              </div>
+            `;
+          });
+          div.innerHTML = html;
+        } else {
+          div.innerHTML = '<div class="message warning">No nominees added yet</div>';
+        }
+      } catch (error) {
+        console.error('Error loading nominees:', error);
+      }
+    }
+
+    async function loadRecentActivity() {
+      try {
+        const res = await fetch(`${API_BASE}/me/emergencies?email=${encodeURIComponent(userEmail)}&limit=5`);
+        const data = await res.json();
+        
+        const activityDiv = document.getElementById('recentActivity');
+        
+        if (data.emergencies && data.emergencies.length > 0) {
+          let html = '';
+          data.emergencies.forEach(em => {
+            const time = formatDateTime(em.created_at);
+            html += `
+              <div class="emergency-item">
+                <div><strong>${em.type || 'Emergency'}</strong> - ${time}</div>
+                <div>${em.details || 'No details provided'}</div>
+              </div>
+            `;
+          });
+          activityDiv.innerHTML = html;
+        } else {
+          activityDiv.innerHTML = '<div class="message warning">No recent activity to display</div>';
+        }
+      } catch (error) {
+        console.error('Error loading recent activity:', error);
+      }
+    }
+
+    async function saveNominee(id) {
+      const name = document.getElementById(`n${id}name`).value;
+      const phone = document.getElementById(`n${id}phone`).value;
+      
+      try {
+        const res = await fetch(`${API_BASE}/me/nominees/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, phone })
+        });
+        
+        if (res.ok) {
+          showMessage('msg4', '✅ Nominee updated successfully', 'success');
+          loadNominees();
+        }
+      } catch (error) {
+        showMessage('msg4', 'Error updating nominee', 'error');
+      }
+    }
+
+    async function deleteNominee(id) {
+      if (!confirm('Are you sure you want to delete this nominee?')) return;
+      
+      try {
+        const res = await fetch(`${API_BASE}/me/nominees/${id}`, {
+          method: "DELETE"
+        });
+        
+        if (res.ok) {
+          showMessage('msg4', '✅ Nominee deleted successfully', 'success');
+          loadNominees();
+        }
+      } catch (error) {
+        showMessage('msg4', 'Error deleting nominee', 'error');
+      }
+    }
+
+    async function addNominee() {
+      const name = document.getElementById("newNomineeName").value;
+      const phone = document.getElementById("newNomineePhone").value;
+      
+      if (!name || !phone) {
+        showMessage('msg4', 'Please fill both name and phone', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/me/nominees`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: userEmail, name, phone })
+        });
+        
+        if (res.ok) {
+          showMessage('msg4', '✅ Nominee added successfully', 'success');
+          document.getElementById("newNomineeName").value = "";
+          document.getElementById("newNomineePhone").value = "";
+          loadNominees();
+        } else {
+          const data = await res.json();
+          showMessage('msg4', data.detail || 'Error adding nominee', 'error');
+        }
+      } catch (error) {
+        showMessage('msg4', 'Network error', 'error');
+      }
+    }
+
+    async function updateMyPhone() {
+      const phone = document.getElementById("newPhone").value;
+      if (!phone) {
+        showMessage('msg4', 'Please enter a phone number', 'error');
+        return;
+      }
+
+      // Since we don't have a specific endpoint for updating user phone,
+      // we'll update the local state and show a message
+      userPhone = phone;
+      document.getElementById("userPhone").textContent = phone;
+      document.getElementById("newPhone").value = "";
+      showMessage('msg4', '✅ Phone number updated locally', 'success');
+    }
+
+    function switchSection(sectionName) {
+      // Remove active class from all menu items
+      document.querySelectorAll('.menu-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      
+      // Add active class to clicked menu item
+      event.target.closest('.menu-item').classList.add('active');
+      
+      // Hide all section contents
+      document.querySelectorAll('.section-content').forEach(section => {
+        section.classList.add('hidden');
+      });
+      
+      // Show selected section
+      document.getElementById(sectionName + 'Section').classList.remove('hidden');
+    }
+
+    function logout() {
+      if (confirm('Are you sure you want to logout?')) {
+        // Reset state
+        userEmail = "";
+        userName = "";
+        userPhone = "";
+        userId = null;
+        
+        // Show auth section, hide dashboard and sidebar
+        document.getElementById("dashboardContent").classList.add("hidden");
+        document.getElementById("sidebar").classList.add("hidden");
+        document.getElementById("authSection").classList.remove("hidden");
+        document.getElementById("step1").classList.remove("hidden");
+        document.getElementById("step2").classList.add("hidden");
+        
+        // Clear form fields
+        document.getElementById("email").value = "";
+        document.getElementById("name").value = "";
+        document.getElementById("phone").value = "";
+        document.getElementById("otp").value = "";
+        
+        showMessage('msg1', 'Logged out successfully', 'success');
+      }
+    }
+
+    function formatDateTime(dateString) {
+      if (!dateString) return 'N/A';
+      
+      try {
+        const date = new Date(dateString);
+        return date.toLocaleString("en-IN", {
+          timeZone: "Asia/Kolkata",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit"
+        });
+      } catch (e) {
+        return dateString;
+      }
+    }
+
+    function showMessage(elementId, message, type) {
+      const element = document.getElementById(elementId);
+      element.innerHTML = `<div class="message ${type}">${message}</div>`;
+      
+      // Auto-clear success messages after 5 seconds
+      if (type === 'success') {
+        setTimeout(() => {
+          element.innerHTML = '';
+        }, 5000);
+      }
+    }
+
+    // Add some keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+      // Ctrl+Enter to send emergency
+      if (e.ctrlKey && e.key === 'Enter') {
+        if (!document.getElementById('emergencySection').classList.contains('hidden')) {
+          sendEmergency();
+        }
+      }
+      
+      // Escape to clear messages
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.message').forEach(msg => {
+          msg.innerHTML = '';
+        });
+      }
+    });
+  </script>
+</body>
+</html>
