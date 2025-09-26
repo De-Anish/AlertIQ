@@ -270,3 +270,4 @@ pip install -r requirements.txt
 # Run server
 python flask_server.py --port 5055
 ```
+# AlertIQ
