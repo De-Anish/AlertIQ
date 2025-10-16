@@ -302,10 +302,6 @@ def serve_ui():
 
 
 if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(description="Emergency Flask API")
-    parser.add_argument("--port", type=int, default=5055)
-    parser.add_argument("--host", type=str, default="0.0.0.0")
-    parser.add_argument("--debug", action="store_true")
-    args = parser.parse_args()
-    app.run(host=args.host, port=args.port, debug=args.debug)
+  
+    port = int(os.environ.get("PORT", 10000))  # ✅ Use Render’s PORT variable
+    app.run(host="0.0.0.0", port=port, debug=False)
