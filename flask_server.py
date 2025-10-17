@@ -301,7 +301,14 @@ def serve_ui():
     return send_from_directory(os.path.dirname(__file__), 'emergency_frontend.html')
 
 
+# ------------------------------------------------------
+# ✅ Render-compatible main function (Production Ready)
+# ------------------------------------------------------
 if __name__ == "__main__":
-  
-    port = int(os.environ.get("PORT", 10000))  # ✅ Use Render’s PORT variable
+    import os
+
+    # Render automatically assigns a port via the PORT environment variable
+    port = int(os.environ.get("PORT", 10000))
+
+    # Bind to all interfaces and disable debug mode for production
     app.run(host="0.0.0.0", port=port, debug=False)
