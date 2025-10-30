@@ -302,12 +302,6 @@ def serve_ui():
 
 
 if __name__ == "__main__":
+    from waitress import serve
 
-
-    # Render sets PORT as an environment variable
-    port = int(os.environ.get("PORT", 5055))  # default 5055 for local testing
-    host = "0.0.0.0"  # Required for Render
-    debug = False     # Set False for production
-
-    # Run the Flask app
-    app.run(host=host, port=port, debug=debug)
+    serve(app, host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
