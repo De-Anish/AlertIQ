@@ -302,11 +302,10 @@ def serve_ui():
 
 
 if __name__ == "__main__":
-
-    # Render sets PORT as an environment variable
-    port = int(os.environ.get("PORT", 5055))  # default 5055 for local testing
-    host = "0.0.0.0"  # Required for Render
-    debug = False     # Set False for production
-
-    # Run the Flask app
-    app.run(host=host, port=port, debug=debug)
+    import argparse
+    parser = argparse.ArgumentParser(description="Emergency Flask API")
+    parser.add_argument("--port", type=int, default=5055)
+    parser.add_argument("--host", type=str, default="0.0.0.0")
+    parser.add_argument("--debug", action="store_true")
+    args = parser.parse_args()
+    app.run(host=args.host, port=args.port, debug=args.debug)
